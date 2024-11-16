@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services DJ et Location Matériel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            text-align: center;
+        }
+        .section {
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        .button {
+            background-color: #007BFF;
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            margin: 10px;
+            text-align: center;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .form-summary {
+            margin-top: 20px;
+            background: #333;
+            padding: 15px;
+            border-radius: 10px;
+        }
+    </style>
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
+        }
+        function calculatePrice(eventType, hours) {
+            return eventType === 'petit' ? 85 * hours : 100 * hours;
+        }
+        function calculateRentalPrice(days) {
+            return days * 150;
+        }
+        function submitServiceDJ() {
+            const nomEvenement = document.getElementById('nomEvenement').value;
+            const dateEvenement = document.getElementById('dateEvenement').value;
+            const duree = document.getElementById('duree').value;
+            const typeEvenement = document.querySelector('input[name="typeEvenement"]:checked').value;
+            const email = document.getElementById('emailServiceDJ').value;
+            const telephone = document.getElementById('telephoneServiceDJ').value;
+
+            const prixTotal = calculatePrice(typeEvenement, duree);
+            
+            const summaryContent = `
+                <h3>Résumé de la commande</h3>
+                <p><strong>Nom de l'événement :</strong> ${nomEvenement}</p>
+                <p><strong>Date de l'événement :</strong> ${dateEvenement}</p>
+                <p><strong>Durée :</strong> ${duree} heures</p>
+                <p><strong>Type d'événement :</strong> ${typeEvenement === 'petit' ? 'Petit événement' : 'Grand événement'}</p>
+                <p><strong>Email :</strong> ${email}</p>
+                <p><strong>Téléphone :</strong> ${telephone}</p>
+                <p><strong>Prix total :</strong> ${prixTotal} CHF</p>
+            `;
+
+            document.getElementById('serviceDJSummary').innerHTML = summaryContent;
+        }
+        function submitLocationMateriel() {
+            const nomClient = document.getElementById('nomClient').value;
+            const adresseEvenement = document.getElementById('adresseEvenement').value;
+            const locationType = document.querySelector('input[name="locationType"]:checked').value;
+            const dateDebut = locationType === 'multiple' ? document.getElementById('dateDebut').value : null;
+            const dateFin = locationType === 'multiple' ? document.getElementById('dateFin').value : null;
+            const dateUnique = locationType === 'single' ? document.getElementById('dateUnique').value : null;
+            const email = document.getElementById('emailLocation').value;
+            const telephone = document.getElementById('telephoneLocation').value;
+
+            let prixTotal;
+            let summaryDates;
+            if (locationType === 'multiple') {
+                const start = new Date(dateDebut);
+                const end = new Date(dateFin);
+                const timeDiff = Math.abs(end - start);
+                const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                prixTotal = calculateRentalPrice(days);
+                summaryDates = `<p><strong>Date de début :</strong> ${dateDebut}</p><p><strong>Date de fin :</strong> ${dateFin}</p>`;
+            } else {
+                prixTotal = calculateRentalPrice(1);
+                summaryDates = `<p><strong>Date :</strong> ${dateUnique}</p>`;
+            }
+
+            const summaryContent = `
+                <h3>Résumé de la commande</h3>
+                <p><strong>Nom du client :</strong> ${nomClient}</p>
+                <p><strong>Adresse de l'événement :</strong> ${adresseEvenement}</p>
+                ${summaryDates}
+                <p><strong>Email :</strong> ${email}</p>
+                <p><strong>Téléphone :</strong> ${telephone}</p>
+                <p><strong>Prix total :</strong> ${prixTotal} CHF</p>
+            `;
+
+            document.getElementById('locationMaterielSummary').innerHTML = summaryContent;
+        }
+        function submitDJMateriel() {
+            const nomEvenement = document.getElementById('nomEvenementDJMateriel').value;
+            const duree = document.getElementById('dureeDJMateriel').value;
+            const typeEvenement = document.querySelector('input[name="typeEvenementDJMateriel"]:checked').value;
+            const locationType = document.querySelector('input[name="locationTypeDJMateriel"]:checked').value;
+            const dateDebut = locationType === 'multiple' ? document.getElementById('dateDebutDJMateriel').value : null;
+            const dateFin = locationType === 'multiple' ? document.getElementById('dateFinDJMateriel').value : null;
+            const dateUnique = locationType === 'single' ? document.getElementById('dateUniqueDJMateriel').value : null;
+            const email = document.getElementById('emailDJMateriel').value;
+            const telephone = document.getElementById('telephoneDJMateriel').value;
+
+            const prixServiceDJ = calculatePrice(typeEvenement, duree);
+            let prixLocationMateriel;
+            let summaryDates;
+            if (locationType === 'multiple') {
+                const start = new Date(dateDebut);
+                const end = new Date(dateFin);
+                const timeDiff = Math.abs(end - start);
+                const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                prixLocationMateriel = calculateRentalPrice(days);
+                summaryDates = `<p><strong>Date de début de location :</strong> ${dateDebut}</p><p><strong>Date de fin de location :</strong> ${dateFin}</p>`;
+            } else {
+                prixLocationMateriel = calculateRentalPrice(1);
+                summaryDates = `<p><strong>Date de location :</strong> ${dateUnique}</p>`;
+            }
+
+            const prixTotal = prixServiceDJ + prixLocationMateriel;
+
+            const summaryContent = `
+                <h3>Résumé de la commande</h3>
+                <p><strong>Nom de l'événement :</strong> ${nomEvenement}</p>
+                <p><strong>Durée :</strong> ${duree} heures</p>
+                <p><strong>Type d'événement :</strong> ${typeEvenement === 'petit' ? 'Petit événement' : 'Grand événement'}</p>
+                ${summaryDates}
+                <p><strong>Email :</strong> ${email}</p>
+                <p><strong>Téléphone :</strong> ${telephone}</p>
+                <p><strong>Prix total :</strong> ${prixTotal} CHF</p>
+            `;
+
+            document.getElementById('djMaterielSummary').innerHTML = summaryContent;
+        }
+    </script>
+<script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+    <script>
+        function downloadPDF(sectionId, title) {
+            const element = document.getElementById(sectionId + 'Summary');
+            const opt = {
+                margin: 0,
+                filename: sectionId + '_commande.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            const contactInfo = `
+                <div style="text-align: center; margin-top: 20px;">
+                    <p>Pour toute question, contactez-nous à :</p>
+                    <p>Email : fabiodjf100@gmail.com</p>
+                    <p>Téléphone : 0783043101</p>
+                </div>
+            `;
+            const header = `<div style="text-align: center; margin-bottom: 20px;"><h2>${title}</h2></div>`;
+            const backgroundImage = `<div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('thumbnail_IMG_0227') no-repeat center center; background-size: cover; opacity: 0.2;"></div>`;
+            element.insertAdjacentHTML('afterbegin', header);
+            element.insertAdjacentHTML('beforeend', contactInfo);
+            element.insertAdjacentHTML('afterbegin', backgroundImage);
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.removeChild(element.firstChild); // Remove background image
+                element.removeChild(element.firstChild); // Remove header
+                element.removeChild(element.lastChild);  // Remove contact info
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Bienvenue sur notre page de services DJ et location de matériel</h1>
+    <button class="button" onclick="showSection('serviceDJ')">Service DJ</button>
+    <button class="button" onclick="showSection('locationMateriel')">Location Matériel</button>
+    <button class="button" onclick="showSection('djMateriel')">DJ + Matériel</button>
+
+    <div id="serviceDJ" class="section">
+        <h2>Service DJ</h2>
+        <form onsubmit="event.preventDefault(); submitServiceDJ();">
+            <label>Nom de l'événement : <input type="text" id="nomEvenement" required></label><br>
+            <label>Date de l'événement : <input type="date" id="dateEvenement" required></label><br>
+            <label>Durée (en heures) : <input type="number" id="duree" required></label><br>
+            <label>Type d'événement :
+                <input type="radio" name="typeEvenement" value="petit" required> Petit
+                <input type="radio" name="typeEvenement" value="grand"> Grand
+            </label><br>
+            <label>Email : <input type="email" id="emailServiceDJ" required></label><br>
+            <label>Téléphone : <input type="tel" id="telephoneServiceDJ" required></label><br>
+            <button type="submit" class="button">Soumettre</button>
+        </form>
+        <div id="serviceDJSummary" class="form-summary"></div>
+<button class="button" onclick="downloadPDF('serviceDJ', 'Résumé Service DJ')">Télécharger le PDF</button>
+        <button class="button" onclick="showSection('')">Retour à l'accueil</button>
+    </div>
+
+    <div id="locationMateriel" class="section">
+        <h2>Location de Matériel</h2>
+        <form onsubmit="event.preventDefault(); submitLocationMateriel();">
+            <label>Nom du client : <input type="text" id="nomClient" required></label><br>
+            <label>Adresse de l'événement : <input type="text" id="adresseEvenement" required></label><br>
+            <label>Type de location :
+                <input type="radio" name="locationType" value="single" onclick="document.getElementById('singleDate').style.display = 'block'; document.getElementById('multipleDates').style.display = 'none';" required> Un jour
+                <input type="radio" name="locationType" value="multiple" onclick="document.getElementById('singleDate').style.display = 'none'; document.getElementById('multipleDates').style.display = 'block';"> Plusieurs jours
+            </label><br>
+            <div id="singleDate" style="display:none;">
+                <label>Date : <input type="date" id="dateUnique"></label><br>
+            </div>
+            <div id="multipleDates" style="display:none;">
+                <label>Date de début : <input type="date" id="dateDebut"></label><br>
+                <label>Date de fin : <input type="date" id="dateFin"></label><br>
+            </div>
+            <label>Email : <input type="email" id="emailLocation" required></label><br>
+            <label>Téléphone : <input type="tel" id="telephoneLocation" required></label><br>
+            <button type="submit" class="button">Soumettre</button>
+        </form>
+        <div id="locationMaterielSummary" class="form-summary"></div>
+<button class="button" onclick="downloadPDF('locationMateriel', 'Résumé Location Matériel')">Télécharger le PDF</button>
+        <button class="button" onclick="showSection('')">Retour à l'accueil</button>
+    </div>
+
+    <div id="djMateriel" class="section">
+        <h2>DJ + Matériel</h2>
+        <form onsubmit="event.preventDefault(); submitDJMateriel();">
+            <label>Nom de l'événement : <input type="text" id="nomEvenementDJMateriel" required></label><br>
+            <label>Durée (en heures) : <input type="number" id="dureeDJMateriel" required></label><br>
+            <label>Type d'événement :
+                <input type="radio" name="typeEvenementDJMateriel" value="petit" required> Petit
+                <input type="radio" name="typeEvenementDJMateriel" value="grand"> Grand
+            </label><br>
+            <label>Type de location :
+                <input type="radio" name="locationTypeDJMateriel" value="single" onclick="document.getElementById('singleDateDJ').style.display = 'block'; document.getElementById('multipleDatesDJ').style.display = 'none';" required> Un jour
+                <input type="radio" name="locationTypeDJMateriel" value="multiple" onclick="document.getElementById('singleDateDJ').style.display = 'none'; document.getElementById('multipleDatesDJ').style.display = 'block';"> Plusieurs jours
+            </label><br>
+            <div id="singleDateDJ" style="display:none;">
+                <label>Date : <input type="date" id="dateUniqueDJMateriel"></label><br>
+            </div>
+            <div id="multipleDatesDJ" style="display:none;">
+                <label>Date de début : <input type="date" id="dateDebutDJMateriel"></label><br>
+                <label>Date de fin : <input type="date" id="dateFinDJMateriel"></label><br>
+            </div>
+            <label>Email : <input type="email" id="emailDJMateriel" required></label><br>
+            <label>Téléphone : <input type="tel" id="telephoneDJMateriel" required></label><br>
+            <button type="submit" class="button">Soumettre</button>
+        </form>
+        <div id="djMaterielSummary" class="form-summary"></div>
+<button class="button" onclick="downloadPDF('djMateriel', 'Résumé DJ + Matériel')">Télécharger le PDF</button>
+        <button class="button" onclick="showSection('')">Retour à l'accueil</button>
+    </div>
+
+</body>
+</html>
